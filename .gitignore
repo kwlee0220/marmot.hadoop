@@ -21,3 +21,16 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/classes/
+/.gradle/
+/.settings/
+/build/
+/extensions/
+/.classpath
+/.project
+/data/
+/hadoop-conf/
+/logs/
+/bin/geocode.db/
+/bin/*.jar
+/**/*.swp

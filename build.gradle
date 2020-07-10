@@ -1,0 +1,95 @@
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+
+group = 'etri'
+version = '20.05.15'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenLocal()
+	jcenter()
+}
+
+ext {
+	hadoop_version = '2.7.3'
+	spark_version = '2.11'
+	spark_lib_version = '2.3.2'
+}
+
+dependencies {
+	compile project(':marmot.data')
+	
+	compile ("org.apache.hadoop:hadoop-client:${hadoop_version}") {
+		exclude group: 'com.google.guava'		// shadow 시킬 목적
+		exclude group: 'com.google.protobuf'	// shadow 시킬 목적
+		exclude group: 'io.netty'				// shadow 시킬 목적
+		exclude group: 'org.apache.commons.cli'	// shadow 시킬 목적
+		
+		// 'com.sun.jersey.contribs:jersey.guice' module에서 guava를 예전 버전을 사용하기 때문에 
+		// guava shadow시 바뀐 reference를 사용하지 않게 하기 위해서 'jersey.guice' module을
+		// 제외시킨다. 그렇지 않으면 map/reduce 작업시 오류 발생됨.
+		exclude group: 'com.sun.jersey.contribs'
+	}
+	
+	compile ("org.apache.spark:spark-sql_${spark_version}:${spark_lib_version}")
+}
+
+task sourceJar(type: Jar) {
+	classifier 'sources'
+	from sourceSets.main.allSource
+}
+task javadocJar(type: Jar) {
+	classifier 'javadoc'
+	from javadoc.destinationDir
+}
+
+artifacts {
+	archives sourceJar
+	archives javadocJar
+}
+
+publishing {
+	publications {
+		marmotHaddop(MavenPublication) {
+			from components.java
+			
+			artifact sourceJar
+			artifact javadocJar
+		}
+	}
+}
+
+apply plugin: 'eclipse'
+eclipse {
+	classpath {
+		file {
+			withXml {
+				def node = it.asNode()
+				node.appendNode('classpathentry', [kind: 'output', path: 'classes'])
+			}
+			
+			whenMerged { cp ->
+				Map entryByPath = cp.entries.groupBy { entry -> entry.path }
+				entryByPath.each { key, values ->
+					if ( values.size() > 1 ) {
+            			def entry = values.first()
+            			if ( entry.kind == 'src' ) {
+            				entry.includes = []
+            				entry.excludes = []
+            			}
+            			int index = cp.entries.indexOf entry
+            			cp.entries.removeAll values
+            			cp.entries.add index, entry
+					}
+				}
+				cp.entries.each { entry ->
+					if ( entry.kind == 'src' && entry.hasProperty('output') ) {
+						entry.output = 'classes'
+					}
+				}
+			}
+		}
+	}
+}
