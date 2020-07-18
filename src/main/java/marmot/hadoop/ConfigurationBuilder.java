@@ -13,9 +13,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +21,6 @@ import com.google.common.collect.Maps;
 
 import utils.Utilities;
 import utils.func.FOption;
-import utils.func.Tuple;
 
 
 /**
@@ -48,7 +44,7 @@ public class ConfigurationBuilder {
 
 	public ConfigurationBuilder setConfigDir(File dir) {
 		Utilities.checkArgument(dir.isDirectory(), "ConfigDir is not a directory: " + dir);
-		
+
 		m_configDir = dir;
 		return this;
 	}
@@ -58,48 +54,11 @@ public class ConfigurationBuilder {
 		return this;
 	}
 	
-	public Configuration build() {
-		try {
-			Driver driver = new Driver();
-			ToolRunner.run(driver, EMPTY_ARGS);
-			
-			return loader(driver.getConf(), driver.m_args)._1;
-		}
-		catch ( Exception e ) {
-			throw new RuntimeException(e);
-		}
+	public Configuration build() throws Exception {
+		return build(new Configuration());
 	}
 	
-	public Tuple<Configuration,String[]> build(String... args) throws Exception {
-		Utilities.checkNotNullArgument(args != null, "empty arguments");
-		
-		Driver driver = new Driver();
-		ToolRunner.run(driver, args);
-		
-		return loader(driver.getConf(), driver.m_args);
-	}
-	
-	public static String[] toApplicationArguments(String... args) throws Exception {
-		Driver driver = new Driver();
-		ToolRunner.run(driver, EMPTY_ARGS);
-		
-		return driver.m_args;
-	}
-	
-	private InputStream readMarmotResource(String name) throws FileNotFoundException {
-		FOption<File> oconfigDir = getConfigDir();
-		if ( oconfigDir.isPresent() ) {
-			return new FileInputStream(new File(oconfigDir.getUnchecked(), name));
-		}
-		else {
-			name = String.format("%s/%s", HADOOP_CONFIG, name);
-			return Thread.currentThread().getContextClassLoader()
-										.getResourceAsStream(name);
-		}
-	}
-	
-	private Tuple<Configuration,String[]> loader(Configuration conf, String[] applArgs)
-		throws Exception {
+	public Configuration build(Configuration conf) throws FileNotFoundException {
 		Utilities.checkNotNullArgument(m_mrMode != null, "runner mode is not specified");
 		
 		// Marmot 설정 정보 추가
@@ -125,16 +84,18 @@ public class ConfigurationBuilder {
 				throw new AssertionError("invalid MapReduce mode: " + m_mrMode);
 		}
 		
-		return Tuple.of(conf, applArgs);
+		return conf;
 	}
-
-	private static class Driver extends Configured implements Tool {
-		private String[] m_args;
-		
-		@Override
-		public int run(String[] args) throws Exception {
-			m_args = args;
-			return 0;
+	
+	private InputStream readMarmotResource(String name) throws FileNotFoundException {
+		FOption<File> oconfigDir = getConfigDir();
+		if ( oconfigDir.isPresent() ) {
+			return new FileInputStream(new File(oconfigDir.getUnchecked(), name));
+		}
+		else {
+			name = String.format("%s/%s", HADOOP_CONFIG, name);
+			return Thread.currentThread().getContextClassLoader()
+										.getResourceAsStream(name);
 		}
 	}
 	

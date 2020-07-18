@@ -1,0 +1,3 @@
+#!	/bin/bash
+
+java -cp $MARMOT_HADOOP_HOME/bin/marmot.hadoop.jar marmot.hadoop.command.GrpcHdfsMarmotServerMain "$@"

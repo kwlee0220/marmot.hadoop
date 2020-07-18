@@ -1,17 +1,17 @@
 package marmot.hadoop;
 
+import java.io.File;
+
 import org.apache.hadoop.conf.Configuration;
 
 import marmot.RecordSchema;
+import marmot.dataset.Catalog;
 import marmot.dataset.DataSet;
 import marmot.dataset.DataSetInfo;
-import marmot.dataset.DataSetServer;
+import marmot.hadoop.command.MarmotHadoopCommand;
 import marmot.hadoop.dataset.HdfsAvroDataSetServer;
-import marmot.hadoop.dataset.HdfsCatalog;
 import marmot.type.DataType;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Help;
 import utils.stream.FStream;
 
 /**
@@ -23,12 +23,18 @@ import utils.stream.FStream;
 		optionListHeading = "Options:%n",
 		description="create a MarmotSparkSession")
 public class TestMain extends MarmotHadoopCommand {
-	@Override
-	protected void run(Configuration conf) throws Exception {
-		HdfsCatalog.dropCatalog(conf);
-		HdfsCatalog catalog = HdfsCatalog.createCatalog(conf);
+	public static final void main(String... args) throws Exception {
+		File propsFile = MarmotHadoopCommand.configureLog4j();
+		System.out.printf("loading marmot log4j.properties: %s%n", propsFile.getAbsolutePath());
 		
-		DataSetServer server = new HdfsAvroDataSetServer(conf);
+		run(new TestMain(), args);
+	}
+	
+	@Override
+	protected void run(MarmotHadoopServer marmot) throws Exception {
+		Configuration conf = marmot.getHadoopConfiguration();
+		
+		HdfsAvroDataSetServer server = marmot.getDataSetServer();
 		
 		boolean done;
 		DataSetInfo info, info2;
@@ -68,6 +74,7 @@ public class TestMain extends MarmotHadoopCommand {
 		FStream.from(server.getDataSetAllInDir("A", true)).map(DataSet::getId).forEach(System.out::println);
 		System.out.println("--------------------------------");
 		
+		Catalog catalog = server.getCatalog();
 		done = catalog.deleteDataSetInfo("A/C");
 		System.out.println("done (must false): " + done);
 		
@@ -82,17 +89,5 @@ public class TestMain extends MarmotHadoopCommand {
 		
 //		FSDataInputStream is = HdfsPath.of(conf, new Path("log4j_marmot.properties")).open();
 //		System.out.println(IOUtils.toString(is, StandardCharsets.UTF_8));
-	}
-
-	public static final void main(String... args) throws Exception {
-		MarmotHadoopCommand.configureLog4j();
-
-		TestMain cmd = new TestMain();
-		try {
-			CommandLine.run(cmd, System.out, System.err, Help.Ansi.OFF);
-		}
-		finally {
-//			cmd.getInitialContext().shutdown();
-		}
 	}
 }

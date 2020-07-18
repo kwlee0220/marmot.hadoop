@@ -2,12 +2,14 @@ package marmot.hadoop.dataset;
 
 import java.io.IOException;
 
+import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.mapred.FsInput;
 
+import marmot.RecordSchema;
 import marmot.avro.AvroRecordReader;
 import marmot.hadoop.support.HdfsPath;
 
@@ -19,6 +21,12 @@ public class AvroHdfsRecordReader extends AvroRecordReader {
 	private final HdfsPath m_path;
 	
 	public AvroHdfsRecordReader(HdfsPath path) {
+		m_path = path;
+	}
+	
+	public AvroHdfsRecordReader(HdfsPath path, RecordSchema schema, Schema avroSchema) {
+		super(schema, avroSchema);
+		
 		m_path = path;
 	}
 	

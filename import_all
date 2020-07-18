@@ -1,0 +1,146 @@
+
+############################################################################################
+##### 주요 구역들
+############################################################################################
+mh_dataset import shp $MARMOT_DATA/행자부/법정구역_5179/시도 구역/시도 --srid EPSG:5179 --charset euc-kr -f
+mh_dataset import shp $MARMOT_DATA/행자부/법정구역_5179/시군구 구역/시군구 --srid EPSG:5179 --charset euc-kr -f
+mh_dataset import shp $MARMOT_DATA/행자부/법정구역_5179/읍면동 구역/읍면동 --srid EPSG:5179 --charset euc-kr -f
+mh_dataset import shp $MARMOT_DATA/행자부/법정구역_5179/리 구역/리 --srid EPSG:5179 --charset euc-kr -f
+##### 연속지적도_2017
+mh_dataset import shp $MARMOT_DATA/공공데이터포털/연속지적도_2017 구역/연속지적도 --charset euc-kr -f
+##### 연속지적도_2017 (사업단)
+mh_dataset import shp $MARMOT_DATA/사업단자료/연속지적도_2017 구역/연속지적도_2017 --charset utf-8 -f
+##### 행정동코드
+mh_dataset import shp $MARMOT_DATA/사업단자료/행정동코드 구역/행정동코드 --charset utf-8 -f
+##### 기초구역
+mh_dataset import shp $MARMOT_DATA/행자부/기초구역_5179 구역/기초구역 --srid EPSG:5179 --charset euc-kr -f
+##### 통계청 집계구
+mh_dataset import shp $MARMOT_DATA/사업단자료/통계청집계구 구역/집계구 --charset euc-kr -f
+
+
+############################################################################################
+##### 국가공간정보포털 - 국가중점데이터
+############################################################################################
+##### 연속지적도형정보(국가중점데이터)
+mh_dataset import shp $MARMOT_DATA/국가공간정보포털/연속지적도형정보/2019.07 구역/연속지적도_2019 --srid EPSG:5174 --charset euc-kr -c lz4 -f
+##### GIS건물통합정보(국가중점데이터)
+mh_dataset import shp  $MARMOT_DATA/국가공간정보포털/GIS건물통합정보/2019.07 건물/GIS건물통합정보_2019 --srid EPSG:5174 --charset euc-kr -c lz4 -f
+##### 법정구역정보-시군구(국가중점데이터)
+mh_dataset import shp $MARMOT_DATA/국가공간정보포털/법정구역정보/2019.07/SIG 구역/시군구_2019 --srid EPSG:5174 --charset euc-kr -f
+##### 법정구역정보-읍면동(국가중점데이터)
+mh_dataset import shp $MARMOT_DATA/국가공간정보포털/법정구역정보/2019.07/EMD 구역/읍면동_2019 --srid EPSG:5174 --charset euc-kr -f
+##### 법정구역정보-리(국가중점데이터)
+mh_dataset import shp $MARMOT_DATA/국가공간정보포털/법정구역정보/2019.07/LIO 구역/리_2019 --srid EPSG:5174 --charset euc-kr -f
+
+
+############################################################################################
+##### 도로명/지번 주소 관련 정보
+############################################################################################
+mh_dataset import csv $MARMOT_DATA/행자부/도로명주소/건물_위치정보 주소/건물POI --delim '|' --header_first --point_cols 'EPSG:5179|xpos|ypos' -f
+
+
+############################################################################################
+##### 토지 관련 정보
+############################################################################################
+##### 표준공시지가
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/표준공시지가 토지/표준공시지가 --header_first --quote '"' -f
+##### 개별공시지가
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/개별공시지가/2012-2017 토지/개별공시지가 --header_first --charset euc-kr -f
+mh_dataset import shp $MARMOT_DATA/공공데이터포털/개별공시지가/2018 토지/개별공시지가_2018 --charset euc-kr -f
+mh_copy 토지/개별공시지가_2018 토지/개별공시지가 -project '*-{the_geom}' -a
+mh_dataset import shp $MARMOT_DATA/공공데이터포털/개별공시지가/2017 토지/개별공시지가_2017 --charset euc-kr -f
+##### 용도지역지구
+mh_dataset import shp $MARMOT_DATA/사업단자료/용도지역지구 토지/용도지역지구 --charset euc-kr
+
+
+##### 유동인구 (2015)
+mh_dataset import csv $MARMOT_DATA/사업단자료/지오비전/유동인구/2015/시간대 지오비전/유동인구/2015/월별_시간대  \
+                	--delim '|' --header_first --null_value='0.0' --point_cols 'EPSG:5179|X_COORD|Y_COORD' -f
+##### 지오비전 카드매출 (2015)
+mh_dataset upload $MARMOT_DATA/사업단자료/지오비전/카드매출/2015/시간대 data/지오비전/카드매출/2015/시간대 --glob '**/*.st' -f
+mh_dataset upload $MARMOT_DATA/사업단자료/지오비전/카드매출/2015/시간대 data/지오비전/카드매출/2015/시간대 --glob '**/*.txt' -f
+
+##### 나비콜 택시 운행 로그
+mh_dataset upload $MARMOT_DATA/나비콜/201601 data/나비콜/택시로그 --glob '**/*.st' -f
+mh_dataset upload $MARMOT_DATA/나비콜/201601 data/나비콜/택시로그 --glob '**/*.dat' -f
+
+############################################################################################
+##### DTG 데이터 (교통안전공단)
+############################################################################################
+#### 운송사 코드
+mh_dataset import csv $MARMOT_DATA/도로교통안전공단/운수회사별_업종 교통/dtg_companies --header_first --quote '"' -f
+##### (2016.09)
+mh_dataset upload $MARMOT_DATA/도로교통안전공단/DTG data/로그/dtg_201609 --glob '**/*.st'
+mh_dataset upload $MARMOT_DATA/도로교통안전공단/DTG data/로그/dtg_201609 --glob '**/201609??.csv.gz'
+##### (2018.09)
+mh_dataset upload $MARMOT_DATA/도로교통안전공단/DTG_201809 data/로그/dtg_201809 --glob '**/DTG-r-*.gz'
+
+############################################################################################
+##### 건물 에너지 사용
+############################################################################################
+##### 건물별 가스 사용 (2011-2018)
+mh_upload_files $MARMOT_DATA/공공데이터포털/건물에너지/가스사용량 data/건물_주택/건물에너지/가스사용량 --glob '**/*.st'
+mh_upload_files $MARMOT_DATA/공공데이터포털/건물에너지/가스사용량 data/건물_주택/건물에너지/가스사용량 --glob '**/*.txt'
+mh_dataset bind data/건물_주택/건물에너지/가스사용량 건물/건물에너지/가스사용량_R -type text -f
+mh_copy 건물/건물에너지/가스사용량_R 건물/건물에너지/가스사용량 -mappers 3 -v -f
+mh_dataset delete 건물/건물에너지/가스사용량_R
+##### 건물별 전기 사용 (2011-2018)
+mh_upload_files $MARMOT_DATA/공공데이터포털/건물에너지/전기사용량 data/건물_주택/건물에너지/전기사용량 --glob '**/*.st'
+mh_upload_files $MARMOT_DATA/공공데이터포털/건물에너지/전기사용량 data/건물_주택/건물에너지/전기사용량 --glob '**/*.txt'
+mh_dataset bind data/건물_주택/건물에너지/전기사용량 건물/건물에너지/전기사용량_R -type text -f
+mh_copy 건물/건물에너지/전기사용량_R 건물/건물에너지/전기사용량 -mappers 3 -v -f
+mh_dataset delete 건물/건물에너지/전기사용량_R
+
+
+############################################################################################
+##### 주요 POI들
+############################################################################################
+##### 민원행정기관
+mh_dataset import shp $MARMOT_DATA/행자부/민원행정기관 POI/민원행정기관 --charset euc-kr -f
+##### 전국 CCTV 설치장소
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/전국cctv POI/전국cctv --delim '|' --header_first --null_value '0'	\
+			--point_cols 'EPSG:4326|경도|위도' -f
+##### 주유소 가격
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/주유소_가격 POI/주유소_가격 --delim '|' --header_first --point_cols 'EPSG:4326|경도|위도' -f
+##### 상가업소
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/상가업소정보_201712 POI/상가업소 --delim ',' --quote '"' --header_first     \
+                        --point_cols 'EPSG:4326,경도,위도' -f
+##### 공중화장실
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/공중화장실 POI/공중화장실 --delim '|' --header_first --null_value '0'	\
+						--point_cols 'EPSG:4326|경도|위도' -f
+##### 전국도서관
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/전국도서관 POI/전국도서관 --delim '|' --header_first --point_cols 'EPSG:4326|LAT|LON' -f
+##### 전국초중등학교
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/전국초중등학교 POI/전국초중등학교 --delim '|' --header_first --point_cols 'EPSG:4326|경도|위도' -f
+##### 전국어린이집
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/전국어린이집 POI/전국어린이집 --delim '|' --header_first --point_cols 'EPSG:4326|경도|위도' -f
+##### 병원
+mh_dataset import csv $MARMOT_DATA/공공데이터포털/병원 POI/병원 --quote '"' --header_first --point_cols 'EPSG:4326,경도,위도' -f
+##### 서울공공와이파이위치
+mh_dataset import csv $MARMOT_DATA/기타/서울공공와이파이위치 POI/서울공공와이파이위치 --quote '"' --header_first  \
+                        --trim_columns --point_cols 'EPSG:4326,x좌표,y좌표' -f
+##### 대규모점포
+mh_dataset import shp $MARMOT_DATA/사업단자료/대규모점포 POI/대규모점포 --charset euc-kr -f
+##### 사회보장시설
+mh_dataset import shp $MARMOT_DATA/사업단자료/사회보장시설 POI/사회보장시설 --charset euc-kr -f
+##### 노인복지시설
+mh_dataset import shp  $MARMOT_DATA/사업단자료/노인복지시설_통합 POI/노인복지시설 --charset utf-8 -f
+##### 어린이보호구역
+mh_dataset import csv $MARMOT_DATA/사업단자료/전국어린이보호구역 POI/어린이보호구역 --quote '"' --header_first			\
+			--point_cols 'EPSG:4326,경도,위도' -f
+##### 주요상권
+mh_dataset import shp $MARMOT_DATA/사업단자료/주요상권 POI/주요상권 -f
+
+
+##### 사망사고
+mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/사망교통사고 교통/교통사고/사망사고 --quote '"' --header_first --point_cols 'EPSG:4326,경도,위도' -f
+##### 무단횡단사고
+mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/무단횡단사고 교통/교통사고/무단횡단사고 --quote "\"" --header_first --point_cols 'EPSG:4326,경도,위도' -f
+##### 보행어린이사고
+mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/보행어린이사고 교통/교통사고/보행어린이사고 --quote "'" --header_first --point_cols 'EPSG:4326,경도,위도' -f
+##### 자전거사고
+mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/자전거사고 교통/교통사고/자전거사고 --quote "'" --header_first --point_cols 'EPSG:4326,경도,위도' -f
+##### 스쿨존사고
+mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/스쿨존사고 교통/교통사고/스쿨존사고 --quote "'" --header_first --point_cols 'EPSG:4326,경도,위도' -f
+##### 보행노인사고
+mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/보행노인사고 교통/교통사고/보행노인사고 --quote "'" --header_first --point_cols 'EPSG:4326,경도,위도' -f

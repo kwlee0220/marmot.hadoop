@@ -1,7 +1,4 @@
-package marmot.hadoop.dataset;
-
-import static java.util.concurrent.CompletableFuture.runAsync;
-import static utils.func.Unchecked.sneakyThrow;
+package marmot.hadoop.command;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,18 +9,20 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.grpc.Server;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import marmot.hadoop.MarmotHadoopCommand;
+import marmot.hadoop.MarmotHadoopServer;
 import marmot.remote.server.GrpcDataSetServiceServant;
+import marmot.remote.server.GrpcFileServiceServant;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import utils.NetUtils;
+import utils.func.Unchecked;
 
 /**
  * 
@@ -33,11 +32,10 @@ import utils.NetUtils;
 			parameterListHeading = "Parameters:%n",
 			optionListHeading = "Options:%n",
 			description="create a remote HDFS DataSetServer (using gRPC)")
-public class GrpcHdfsDataSetServerMain extends MarmotHadoopCommand {
-	private final static Logger s_logger = LoggerFactory.getLogger(GrpcHdfsDataSetServerMain.class);
+public class GrpcHdfsMarmotServerMain extends MarmotHadoopCommand {
+	private final static Logger s_logger = LoggerFactory.getLogger(GrpcHdfsMarmotServerMain.class);
 	
 	private static final int DEFAULT_MARMOT_PORT = 15685;
-	private static final File STORE_ROOT = new File("/home/kwlee/tmp/datastore");
 	
 	@Option(names={"-port"}, paramLabel="number", required=false,
 			description={"marmot DataSetServer port number"})
@@ -47,38 +45,34 @@ public class GrpcHdfsDataSetServerMain extends MarmotHadoopCommand {
 		File propsFile = MarmotHadoopCommand.configureLog4j();
 		System.out.printf("loading marmot log4j.properties: %s%n", propsFile.getAbsolutePath());
 		
-		GrpcHdfsDataSetServerMain cmd = new GrpcHdfsDataSetServerMain(args);
-		run(cmd);
-	}
-	
-	GrpcHdfsDataSetServerMain(String[] args) {
-		super(args);
+		run(new GrpcHdfsMarmotServerMain(), args);
 	}
 	
 	@Override
-	protected void run(Configuration conf) throws Exception {
+	protected void run(MarmotHadoopServer marmot) throws Exception {
 		int port = m_port;
 		if ( port < 0 ) {
-			String portStr = System.getenv("MARMOT_PORT");
+			String portStr = System.getenv("MARMOT_GRPC_PORT");
 			port = (portStr != null) ? Integer.parseInt(portStr) : DEFAULT_MARMOT_PORT;
 		}
 		
-		HdfsAvroDataSetServer dsServer = new HdfsAvroDataSetServer(conf);
-		GrpcDataSetServiceServant servant = new GrpcDataSetServiceServant(dsServer);
+		GrpcDataSetServiceServant servant = new GrpcDataSetServiceServant(marmot.getDataSetServer());
+		GrpcFileServiceServant fileServant = new GrpcFileServiceServant(marmot.getFileServer());
 
 		Server server = NettyServerBuilder.forPort(port)
 											.addService(servant)
+											.addService(fileServant)
 											.build();
 		server.start();
 
 		String host = NetUtils.getLocalHostAddress();
-		System.out.printf("started: MarmotServer[host=%s, port=%d]%n", host, port);
+		System.out.printf("started: GrpcHdfsMarmotServer[host=%s, port=%d]%n", host, port);
 
 		getTerminationLockFile()
 			.orElse(() -> getHomeDir().map(dir -> new File(dir, ".lock")))
 			.ifPresent(lock -> {
 				s_logger.info("monitor the termination_lock: {}", lock.getAbsolutePath());
-				runAsync(sneakyThrow(() -> awaitTermination(server, lock)));
+				CompletableFuture.runAsync(Unchecked.sneakyThrow(() -> awaitTermination(server, lock)));
 			});
 		server.awaitTermination();
 	}

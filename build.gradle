@@ -1,5 +1,16 @@
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+buildscript {
+	repositories {
+		mavenLocal()
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+	}
+}
 
 group = 'etri'
 version = '20.05.15'
@@ -9,31 +20,35 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenLocal()
-	jcenter()
+	maven { url "http://repo.osgeo.org/repository/release/" }
+    mavenCentral()
 }
 
 ext {
-	hadoop_version = '2.7.3'
-	spark_version = '2.11'
-	spark_lib_version = '2.3.2'
+//	hadoop_version = '2.7.3'
+	hadoop_version = '3.1.1'
+	avro_version = '1.9.2'
 }
 
 dependencies {
 	compile project(':marmot.data')
 	
-	compile ("org.apache.hadoop:hadoop-client:${hadoop_version}") {
-		exclude group: 'com.google.guava'		// shadow 시킬 목적
-		exclude group: 'com.google.protobuf'	// shadow 시킬 목적
-		exclude group: 'io.netty'				// shadow 시킬 목적
-		exclude group: 'org.apache.commons.cli'	// shadow 시킬 목적
-		
-		// 'com.sun.jersey.contribs:jersey.guice' module에서 guava를 예전 버전을 사용하기 때문에 
-		// guava shadow시 바뀐 reference를 사용하지 않게 하기 위해서 'jersey.guice' module을
-		// 제외시킨다. 그렇지 않으면 map/reduce 작업시 오류 발생됨.
-		exclude group: 'com.sun.jersey.contribs'
-	}
+	compile ("org.apache.hadoop:hadoop-common:${hadoop_version}")
+	compile ("org.apache.hadoop:hadoop-hdfs-client:${hadoop_version}")
 	
-	compile ("org.apache.spark:spark-sql_${spark_version}:${spark_lib_version}")
+	// Avro
+	compile "org.apache.avro:avro-mapred:${avro_version}"
+}
+
+shadowJar {
+	classifier 'all'
+	
+//	zip64 true
+	mergeServiceFiles()
+	
+	exclude 'META-INF/*.SF'
+	exclude 'META-INF/*.DSA'
+	exclude 'META-INF/*.RSA'
 }
 
 task sourceJar(type: Jar) {
@@ -48,15 +63,17 @@ task javadocJar(type: Jar) {
 artifacts {
 	archives sourceJar
 	archives javadocJar
+	archives shadowJar
 }
 
 publishing {
 	publications {
-		marmotHaddop(MavenPublication) {
+		marmotHadoop(MavenPublication) {
 			from components.java
 			
 			artifact sourceJar
 			artifact javadocJar
+			artifact shadowJar
 		}
 	}
 }

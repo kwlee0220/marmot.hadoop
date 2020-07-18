@@ -6,6 +6,8 @@ import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import marmot.RecordSchema;
 import marmot.avro.AvroRecordWriter;
@@ -16,6 +18,8 @@ import marmot.hadoop.support.HdfsPath;
  * @author Kang-Woo Lee (ETRI)
  */
 public class AvroHdfsRecordWriter extends AvroRecordWriter {
+	private static final Logger s_logger = LoggerFactory.getLogger(AvroHdfsRecordWriter.class);
+	
 	private final HdfsPath m_path;
 	
 	public AvroHdfsRecordWriter(HdfsPath path) {
@@ -38,5 +42,10 @@ public class AvroHdfsRecordWriter extends AvroRecordWriter {
 		writer.create(avroSchema, m_path.create());
 		
 		return writer;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("AvroHdfsWriter[%s]", m_path);
 	}
 }
