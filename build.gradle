@@ -36,8 +36,11 @@ dependencies {
 	compile ("org.apache.hadoop:hadoop-common:${hadoop_version}")
 	compile ("org.apache.hadoop:hadoop-hdfs-client:${hadoop_version}")
 	
-	// Avro
-	compile "org.apache.avro:avro-mapred:${avro_version}"
+	// Avro (Avro 파일을 HDFS에 저장하기 위해 사용: FsInput)
+	compile ("org.apache.avro:avro-mapred:${avro_version}") {
+		exclude group: 'org.apache.avro', module: 'avro-ipc'
+		exclude group: 'org.apache.avro', module: 'avro-ipc-jetty'
+	}
 }
 
 shadowJar {

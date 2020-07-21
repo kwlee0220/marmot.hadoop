@@ -42,8 +42,8 @@ public class GrpcHdfsMarmotServerMain extends MarmotHadoopCommand {
 	private int m_port = -1;
 	
 	public static final void main(String... args) throws Exception {
-		File propsFile = MarmotHadoopCommand.configureLog4j();
-		System.out.printf("loading marmot log4j.properties: %s%n", propsFile.getAbsolutePath());
+//		File propsFile = MarmotHadoopCommand.configureLog4j();
+//		System.out.printf("loading marmot log4j.properties: %s%n", propsFile.getAbsolutePath());
 		
 		run(new GrpcHdfsMarmotServerMain(), args);
 	}

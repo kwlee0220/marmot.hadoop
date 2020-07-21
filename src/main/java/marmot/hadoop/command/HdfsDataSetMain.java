@@ -22,7 +22,7 @@ import utils.PicocliSubCommand;
 			DatasetCommands.ListDataSet.class,
 			DatasetCommands.Show.class,
 			DatasetCommands.Schema.class,
-//			DatasetCommands.Move.class,
+			DatasetCommands.Move.class,
 //			DatasetCommands.SetGcInfo.class,
 //			DatasetCommands.AttachGeometry.class,
 //			DatasetCommands.Count.class,

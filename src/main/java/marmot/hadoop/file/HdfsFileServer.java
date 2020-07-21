@@ -10,7 +10,9 @@ import org.apache.hadoop.fs.Path;
 import com.google.common.io.ByteStreams;
 
 import marmot.file.FileServer;
+import marmot.file.MarmotFileException;
 import marmot.hadoop.support.HdfsPath;
+import utils.stream.FStream;
 
 /**
  * 
@@ -46,5 +48,17 @@ public class HdfsFileServer implements FileServer {
 		HdfsPath hpath = HdfsPath.of(m_conf, new Path(m_root, path));
 		
 		return hpath.delete();
+	}
+
+	@Override
+	public FStream<String> walkRegularFileTree(String start) {
+		try {
+			HdfsPath hpath = HdfsPath.of(m_conf, new Path(m_root, start));
+			return hpath.walkRegularFileTree()
+						.map(HdfsPath::toString);
+		}
+		catch ( IOException e ) {
+			throw new MarmotFileException("fails to traverse: start=" + start, e);
+		}
 	}
 }

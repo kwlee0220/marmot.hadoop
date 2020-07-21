@@ -43,7 +43,7 @@ public class ConfigurationBuilder {
 	}
 
 	public ConfigurationBuilder setConfigDir(File dir) {
-		Utilities.checkArgument(dir.isDirectory(), "ConfigDir is not a directory: " + dir);
+		Utilities.checkArgument(dir.isDirectory(), "ConfigDir is not a directory: " + dir.getAbsolutePath());
 
 		m_configDir = dir;
 		return this;

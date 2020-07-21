@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.avro.Schema;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import marmot.RecordStream;
@@ -20,6 +21,7 @@ import marmot.dataset.DataSet;
 import marmot.dataset.DataSetException;
 import marmot.dataset.DataSetExistsException;
 import marmot.dataset.DataSetInfo;
+import marmot.dataset.DataSetNotFoundException;
 import marmot.hadoop.support.HdfsPath;
 import utils.jdbc.JdbcProcessor;
 
@@ -44,6 +46,10 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 	
 	public Configuration getConf() {
 		return m_conf;
+	}
+	
+	public FileSystem getHadoopFileSystem() {
+		return m_root.getFileSystem();
 	}
 	
 	public static HdfsAvroDataSetServer format(Configuration conf) {
@@ -96,6 +102,18 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 	}
 
 	@Override
+	public DataSet moveDataSet(String id, String newId) {
+		DataSetInfo oldInfo = getCatalog().getDataSetInfo(id).getOrThrow(() -> new DataSetNotFoundException(id));
+		DataSetInfo newInfo = getCatalog().moveDataSetInfo(id, newId);
+		
+		HdfsPath oldPath = getHdfsPath(oldInfo);
+		HdfsPath newPath = getHdfsPath(newInfo);
+		oldPath.moveTo(newPath);
+		
+		return toDataSet(newInfo);
+	}
+
+	@Override
 	protected DataSet toDataSet(DataSetInfo info) {
 		return new HdfsDataSet(this, info);
 	}
@@ -107,6 +125,10 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 		}
 		
 		return JdbcProcessor.parseString(jdbcString);
+	}
+	
+	private HdfsPath getHdfsPath(DataSetInfo info) {
+		return m_root.child(info.getId().substring(1));
 	}
 
 	public class HdfsDataSet extends AbstractDataSet<HdfsAvroDataSetServer> {

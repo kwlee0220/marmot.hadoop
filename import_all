@@ -144,3 +144,9 @@ mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/자전거사고 교
 mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/스쿨존사고 교통/교통사고/스쿨존사고 --quote "'" --header_first --point_cols 'EPSG:4326,경도,위도' -f
 ##### 보행노인사고
 mh_dataset import csv $MARMOT_DATA/기타/교통사고정보/보행노인사고 교통/교통사고/보행노인사고 --quote "'" --header_first --point_cols 'EPSG:4326,경도,위도' -f
+
+
+##### GeoJSoN import
+mh_dataset import geojson $MARMOT_DATA/기타/유엔진/geojson/시도.geojson uengine/sido -f
+mh_dataset import geojson $MARMOT_DATA/기타/유엔진/geojson/시군구.geojson uengine/sgg -f
+mh_dataset import geojson $MARMOT_DATA/기타/유엔진/geojson/읍면동.geojson uengine/emd -f
