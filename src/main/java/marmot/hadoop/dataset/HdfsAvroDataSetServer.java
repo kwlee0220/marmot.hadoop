@@ -23,6 +23,7 @@ import marmot.dataset.DataSetExistsException;
 import marmot.dataset.DataSetInfo;
 import marmot.dataset.DataSetNotFoundException;
 import marmot.hadoop.support.HdfsPath;
+import marmot.stream.StatsCollectingRecordStream;
 import utils.jdbc.JdbcProcessor;
 
 
@@ -150,7 +151,15 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 		public long write(RecordStream stream) {
 			HdfsPath path = getHdfsPath();
 			HdfsPath partPath = path.child(UUID.randomUUID().toString() + ".avro");
-			return new AvroHdfsRecordWriter(partPath).write(stream);
+			
+			StatsCollectingRecordStream collector = stream.collectStats();
+			long cnt = new AvroHdfsRecordWriter(partPath).write(collector);
+			
+			m_info.setRecordCount(collector.getRecordCount());
+			m_info.setBounds(collector.getBounds());
+			m_server.getCatalog().updateDataSetInfo(m_info);
+			
+			return cnt;
 		}
 	
 		@Override
