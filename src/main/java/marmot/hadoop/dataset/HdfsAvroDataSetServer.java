@@ -14,7 +14,6 @@ import marmot.RecordStream;
 import marmot.avro.AvroUtils;
 import marmot.dataset.AbstractDataSet;
 import marmot.dataset.AbstractDataSetServer;
-import marmot.dataset.Catalog;
 import marmot.dataset.CatalogException;
 import marmot.dataset.Catalogs;
 import marmot.dataset.DataSet;
@@ -22,6 +21,7 @@ import marmot.dataset.DataSetException;
 import marmot.dataset.DataSetExistsException;
 import marmot.dataset.DataSetInfo;
 import marmot.dataset.DataSetNotFoundException;
+import marmot.dataset.JdbcCatalog;
 import marmot.hadoop.support.HdfsPath;
 import marmot.stream.StatsCollectingRecordStream;
 import utils.jdbc.JdbcProcessor;
@@ -39,7 +39,7 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 	private final HdfsPath m_root;
 	
 	public HdfsAvroDataSetServer(Configuration conf) {
-		super(new Catalog(getJdbcProcessor(conf)));
+		super(new JdbcCatalog(getJdbcProcessor(conf)));
 		
 		m_conf = conf;
 		m_root = HdfsPath.of(conf, new Path(conf.get(PROP_DEF_DATASET_DIR, DEF_DATASET_DIR)));
@@ -60,14 +60,14 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 	
 	public static HdfsAvroDataSetServer create(Configuration conf) {
 		JdbcProcessor jdbc = getJdbcProcessor(conf);
-		Catalog.createCatalog(jdbc);
+		JdbcCatalog.createCatalog(jdbc);
 
 		return new HdfsAvroDataSetServer(conf);
 	}
 	
 	public static void drop(Configuration conf) {
 		JdbcProcessor jdbc = getJdbcProcessor(conf);
-		Catalog.dropCatalog(jdbc);
+		JdbcCatalog.dropCatalog(jdbc);
 
 		Path root = new Path(conf.get(PROP_DEF_DATASET_DIR, DEF_DATASET_DIR));
 		HdfsPath.of(conf, root).delete();
@@ -132,9 +132,12 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 		return m_root.child(info.getId().substring(1));
 	}
 
-	public class HdfsDataSet extends AbstractDataSet<HdfsAvroDataSetServer> {
+	public class HdfsDataSet extends AbstractDataSet {
+		private final HdfsAvroDataSetServer m_server;
 		public HdfsDataSet(HdfsAvroDataSetServer server, DataSetInfo info) {
-			super(server, info);
+			super(info);
+			
+			m_server = server;
 		}
 		
 		public HdfsPath getHdfsPath() {

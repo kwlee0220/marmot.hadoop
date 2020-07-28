@@ -42,9 +42,6 @@ public class GrpcHdfsMarmotServerMain extends MarmotHadoopCommand {
 	private int m_port = -1;
 	
 	public static final void main(String... args) throws Exception {
-//		File propsFile = MarmotHadoopCommand.configureLog4j();
-//		System.out.printf("loading marmot log4j.properties: %s%n", propsFile.getAbsolutePath());
-		
 		run(new GrpcHdfsMarmotServerMain(), args);
 	}
 	
@@ -65,8 +62,13 @@ public class GrpcHdfsMarmotServerMain extends MarmotHadoopCommand {
 											.build();
 		server.start();
 
-		String host = NetUtils.getLocalHostAddress();
-		System.out.printf("started: GrpcHdfsMarmotServer[host=%s, port=%d]%n", host, port);
+		if ( m_verbose ) {
+			System.out.println("use DataSerServer: " + marmot.getDataSetServer());
+			System.out.println("use FileServer: " + marmot.getFileServer());
+			
+			String host = NetUtils.getLocalHostAddress();
+			System.out.printf("started: %s[host=%s, port=%d]%n", marmot.getClass().getSimpleName(), host, port);
+		}
 
 		getTerminationLockFile()
 			.orElse(() -> getHomeDir().map(dir -> new File(dir, ".lock")))

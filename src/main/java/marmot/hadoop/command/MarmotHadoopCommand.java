@@ -58,7 +58,7 @@ public abstract class MarmotHadoopCommand implements PicocliCommand<MarmotHadoop
 	private String m_lock = null;
 	
 	@Option(names={"-v"}, description={"verbose"})
-	private boolean m_verbose = false;
+	protected boolean m_verbose = false;
 	
 	@Nullable private Configuration m_initConf;
 	@Nullable private MarmotHadoopServer m_marmot;

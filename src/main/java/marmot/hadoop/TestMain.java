@@ -1,13 +1,12 @@
 package marmot.hadoop;
 
-import java.io.File;
-
 import org.apache.hadoop.conf.Configuration;
 
 import marmot.RecordSchema;
 import marmot.dataset.Catalog;
 import marmot.dataset.DataSet;
 import marmot.dataset.DataSetInfo;
+import marmot.dataset.DataSetType;
 import marmot.hadoop.command.MarmotHadoopCommand;
 import marmot.hadoop.dataset.HdfsAvroDataSetServer;
 import marmot.type.DataType;
@@ -41,22 +40,22 @@ public class TestMain extends MarmotHadoopCommand {
 		DataSet ds;
 		RecordSchema schema = RecordSchema.builder().addColumn("id", DataType.STRING).build();
 		
-		info = new DataSetInfo("A", schema);
+		info = new DataSetInfo("A", DataSetType.AVRO, schema);
 		ds = server.createDataSet(info, true);
 		
-		info = new DataSetInfo("B", schema);
+		info = new DataSetInfo("B", DataSetType.AVRO, schema);
 		ds = server.createDataSet(info, true);
 		
-		info = new DataSetInfo("/A/A", schema);
+		info = new DataSetInfo("/A/A", DataSetType.AVRO, schema);
 		ds = server.createDataSet(info, true);
 		
-		info = new DataSetInfo("/A/A/A", schema);
+		info = new DataSetInfo("/A/A/A", DataSetType.AVRO, schema);
 		ds = server.createDataSet(info, true);
 		
-		info = new DataSetInfo("/A/B/A", schema);
+		info = new DataSetInfo("/A/B/A", DataSetType.AVRO, schema);
 		ds = server.createDataSet(info, true);
 		
-		info = new DataSetInfo("/A/B/B", schema);
+		info = new DataSetInfo("/A/B/B", DataSetType.AVRO, schema);
 		ds = server.createDataSet(info, true);
 		
 		FStream.from(server.getDataSetAll()).forEach(System.out::println);
