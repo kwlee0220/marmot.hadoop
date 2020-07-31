@@ -156,7 +156,7 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 			HdfsPath partPath = path.child(UUID.randomUUID().toString() + ".avro");
 			
 			StatsCollectingRecordStream collector = stream.collectStats();
-			long cnt = new AvroHdfsRecordWriter(partPath).write(collector);
+			long cnt = new AvroHdfsRecordWriter(partPath, stream.getRecordSchema()).write(collector);
 			
 			m_info.setRecordCount(collector.getRecordCount());
 			m_info.setBounds(collector.getBounds());
