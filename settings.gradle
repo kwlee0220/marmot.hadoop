@@ -1,7 +1,7 @@
 rootProject.name = 'marmot.hadoop'
 
 ext.common_dir = "../../common"
-['utils', 'utils.geo'].each {
+['utils', 'utilsx', 'utils.geo'].each {
 	include ":$it"
 	project(":$it").projectDir = file("${common_dir}/$it")
 }

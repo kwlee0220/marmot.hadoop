@@ -25,8 +25,8 @@ repositories {
 }
 
 ext {
-//	hadoop_version = '2.7.3'
-	hadoop_version = '3.1.1'
+	hadoop_version = '2.7.3'
+//	hadoop_version = '3.1.1'
 	avro_version = '1.9.2'
 }
 
@@ -34,7 +34,7 @@ dependencies {
 	compile project(':marmot.data')
 	
 	compile ("org.apache.hadoop:hadoop-common:${hadoop_version}")
-	compile ("org.apache.hadoop:hadoop-hdfs-client:${hadoop_version}")
+//	compile ("org.apache.hadoop:hadoop-hdfs-client:${hadoop_version}")
 	
 	// Avro (Avro 파일을 HDFS에 저장하기 위해 사용: FsInput)
 	compile ("org.apache.avro:avro-mapred:${avro_version}") {
