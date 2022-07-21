@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +121,6 @@ public class ConfigurationBuilder {
 		String rfFile = props.getProperty("log4j.appender.rfout.File");
 		rfFile = StringSubstitutor.replace(rfFile, bindings);
 		props.setProperty("log4j.appender.rfout.File", rfFile);
-		PropertyConfigurator.configure(props);
 		
 		return propsFile;
 	}

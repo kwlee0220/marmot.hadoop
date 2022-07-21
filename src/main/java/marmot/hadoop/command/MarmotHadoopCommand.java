@@ -14,11 +14,15 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
+
+import utils.PicocliCommand;
+import utils.UsageHelp;
+import utils.func.FOption;
+import utils.func.Tuple;
 
 import marmot.hadoop.ConfigurationBuilder;
 import marmot.hadoop.MapReduceMode;
@@ -30,10 +34,6 @@ import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.RunLast;
 import picocli.CommandLine.Spec;
-import utils.PicocliCommand;
-import utils.UsageHelp;
-import utils.func.FOption;
-import utils.func.Tuple;
 
 /**
  * 
@@ -150,7 +150,6 @@ public abstract class MarmotHadoopCommand implements PicocliCommand<MarmotHadoop
 		String rfFile = props.getProperty("log4j.appender.rfout.File");
 		rfFile = StringSubstitutor.replace(rfFile, bindings);
 		props.setProperty("log4j.appender.rfout.File", rfFile);
-		PropertyConfigurator.configure(props);
 		if ( s_logger.isDebugEnabled() ) {
 			s_logger.debug("use log4j.properties from {}", propsFile);
 		}
