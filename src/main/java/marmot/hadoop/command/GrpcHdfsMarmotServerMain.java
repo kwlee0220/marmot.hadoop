@@ -14,6 +14,9 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import utils.NetUtils;
+import utils.func.UncheckedRunnable;
+
 import io.grpc.Server;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import marmot.hadoop.MarmotHadoopServer;
@@ -21,8 +24,6 @@ import marmot.remote.server.GrpcDataSetServiceServant;
 import marmot.remote.server.GrpcFileServiceServant;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import utils.NetUtils;
-import utils.func.Unchecked;
 
 /**
  * 
@@ -74,7 +75,7 @@ public class GrpcHdfsMarmotServerMain extends MarmotHadoopCommand {
 			.orElse(() -> getHomeDir().map(dir -> new File(dir, ".lock")))
 			.ifPresent(lock -> {
 				s_logger.info("monitor the termination_lock: {}", lock.getAbsolutePath());
-				CompletableFuture.runAsync(Unchecked.sneakyThrow(() -> awaitTermination(server, lock)));
+				CompletableFuture.runAsync(UncheckedRunnable.sneakyThrow(() -> awaitTermination(server, lock)));
 			});
 		server.awaitTermination();
 	}
