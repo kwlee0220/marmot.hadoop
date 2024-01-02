@@ -20,11 +20,12 @@ import org.apache.hadoop.security.AccessControlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import marmot.hadoop.io.MarmotFileException;
-import marmot.hadoop.io.MarmotFileNotFoundException;
 import utils.Utilities;
 import utils.func.FOption;
 import utils.stream.FStream;
+
+import marmot.hadoop.io.MarmotFileException;
+import marmot.hadoop.io.MarmotFileNotFoundException;
 
 /**
  * 
@@ -471,7 +472,7 @@ public final class HdfsPath implements Serializable {
 																return FStream.of(fstat);
 															}
 														});
-				return FStream.concat(FStream.of(current), children);
+				return FStream.of(current).concatWith(children);
 			}
 			else {
 				return FStream.of(current);
