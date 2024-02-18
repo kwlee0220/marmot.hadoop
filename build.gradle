@@ -1,15 +1,8 @@
-apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-buildscript {
-	repositories {
-		mavenLocal()
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
-	}
+plugins {
+	id 'java-library'
+	id 'eclipse'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
+	id 'maven-publish'
 }
 
 group = 'etri'
@@ -20,7 +13,10 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenLocal()
-	maven { url "http://repo.osgeo.org/repository/release/" }
+	maven {
+		url "https://repo.osgeo.org/repository/release/"
+		allowInsecureProtocol = true
+	}
     mavenCentral()
 }
 
@@ -31,13 +27,13 @@ ext {
 }
 
 dependencies {
-	compile project(':marmot.data')
+	implementation project(':marmot.data')
 	
-	compile ("org.apache.hadoop:hadoop-common:${hadoop_version}")
-//	compile ("org.apache.hadoop:hadoop-hdfs-client:${hadoop_version}")
+	implementation ("org.apache.hadoop:hadoop-common:${hadoop_version}")
+//	implementation ("org.apache.hadoop:hadoop-hdfs-client:${hadoop_version}")
 	
 	// Avro (Avro 파일을 HDFS에 저장하기 위해 사용: FsInput)
-	compile ("org.apache.avro:avro-mapred:${avro_version}") {
+	implementation ("org.apache.avro:avro-mapred:${avro_version}") {
 		exclude group: 'org.apache.avro', module: 'avro-ipc'
 		exclude group: 'org.apache.avro', module: 'avro-ipc-jetty'
 	}
@@ -77,44 +73,6 @@ publishing {
 			artifact sourceJar
 			artifact javadocJar
 			artifact shadowJar
-		}
-	}
-}
-
-apply plugin: 'eclipse'
-eclipse {
-	classpath {
-		file {
-			withXml {
-				def node = it.asNode()
-				node.appendNode('classpathentry', [kind: 'output', path: 'classes'])
-			}
-			
-			whenMerged { cp ->
-				Map entryByPath = cp.entries.groupBy { entry -> entry.path }
-				entryByPath.each { key, values ->
-					if ( values.size() > 1 ) {
-            			def entry = values.first()
-            			if ( entry.kind == 'src' ) {
-            				entry.includes = []
-            				entry.excludes = []
-            			}
-            			int index = cp.entries.indexOf entry
-            			cp.entries.removeAll values
-            			cp.entries.add index, entry
-					}
-				}
-				cp.entries.each { entry ->
-					if ( entry.kind == 'src' && entry.hasProperty('output') ) {
-						if ( entry.path.startsWith("src/test/") ) {
-							entry.output = 'test_classes'
-						}
-						else {
-							entry.output = 'classes'
-						}
-					}
-				}
-			}
 		}
 	}
 }
