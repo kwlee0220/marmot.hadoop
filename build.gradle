@@ -8,7 +8,10 @@ plugins {
 group = 'etri'
 version = '20.05.15'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
 [compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
 
 repositories {
@@ -40,7 +43,7 @@ dependencies {
 }
 
 shadowJar {
-	classifier 'all'
+	// classifier 'all'
 	
 //	zip64 true
 	mergeServiceFiles()
@@ -51,11 +54,11 @@ shadowJar {
 }
 
 task sourceJar(type: Jar) {
-	classifier 'sources'
+	// classifier 'sources'
 	from sourceSets.main.allSource
 }
 task javadocJar(type: Jar) {
-	classifier 'javadoc'
+	// classifier 'javadoc'
 	from javadoc.destinationDir
 }
 
