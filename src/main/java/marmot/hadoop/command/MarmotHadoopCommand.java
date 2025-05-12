@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Maps;
 
 import utils.PicocliCommand;
+import utils.Tuple;
 import utils.UsageHelp;
 import utils.func.FOption;
-import utils.func.Tuple;
 
 import marmot.hadoop.ConfigurationBuilder;
 import marmot.hadoop.MapReduceMode;
