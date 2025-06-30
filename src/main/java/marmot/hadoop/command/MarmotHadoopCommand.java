@@ -49,9 +49,9 @@ public abstract class MarmotHadoopCommand implements PicocliCommand<MarmotHadoop
 	@Mixin private UsageHelp m_help;
 
 	@Option(names={"-h", "--home"}, paramLabel="path", description={"Marmot home directory"})
-	@Nullable private File m_homeDir = null;
+	private @Nullable File m_homeDir = null;
 	@Option(names={"--config"}, paramLabel="path", description={"Marmot config directory"})
-	@Nullable private File m_configDir = null;
+	private @Nullable File m_configDir = null;
 	private MapReduceMode m_mrMode = MapReduceMode.LOCAL;
 	
 	@Option(names={"-l", "--lock"}, paramLabel="path", description={"MarmotServer termination-lock file"})
@@ -60,8 +60,8 @@ public abstract class MarmotHadoopCommand implements PicocliCommand<MarmotHadoop
 	@Option(names={"-v"}, description={"verbose"})
 	protected boolean m_verbose = false;
 	
-	@Nullable private Configuration m_initConf;
-	@Nullable private MarmotHadoopServer m_marmot;
+	private @Nullable Configuration m_initConf;
+	private @Nullable MarmotHadoopServer m_marmot;
 	
 	protected abstract void run(MarmotHadoopServer marmot) throws Exception;
 

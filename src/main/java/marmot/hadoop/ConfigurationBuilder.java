@@ -34,7 +34,7 @@ public class ConfigurationBuilder {
 	private static final String HADOOP_CONFIG = "hadoop-conf";
 	private static final String ENV_VAR_HOME = "MARMOT_HOME";
 
-	@Nullable private File m_configDir = null;
+	private @Nullable File m_configDir = null;
 	private MapReduceMode m_mrMode = MapReduceMode.NONE;
 	
 	public FOption<File> getConfigDir() {
