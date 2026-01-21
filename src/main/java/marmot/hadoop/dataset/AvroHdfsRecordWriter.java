@@ -9,6 +9,8 @@ import org.apache.avro.generic.GenericRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import utils.func.Optionals;
+
 import marmot.RecordSchema;
 import marmot.avro.AvroRecordWriter;
 import marmot.avro.AvroUtils;
@@ -53,8 +55,8 @@ public class AvroHdfsRecordWriter extends AvroRecordWriter {
 		GenericDatumWriter<GenericRecord> datumWriter = new GenericDatumWriter<>(m_avroSchema);
 		DataFileWriter<GenericRecord> writer = new DataFileWriter<>(datumWriter);
 		writer.setMeta("marmot_schema", m_schema.toString());
-		getSyncInterval().transform(writer, DataFileWriter::setSyncInterval);
-		getCodec().transform(writer, DataFileWriter::setCodec);
+		Optionals.transform(getSyncInterval(), writer, DataFileWriter::setSyncInterval);
+		Optionals.transform(getCodec(), writer, DataFileWriter::setCodec);
 		writer.create(m_avroSchema, m_path.create());
 		
 		return writer;
