@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
-import utils.Utilities;
+import utils.Preconditions;
 import utils.func.FOption;
 
 
@@ -42,7 +42,7 @@ public class ConfigurationBuilder {
 	}
 
 	public ConfigurationBuilder setConfigDir(File dir) {
-		Utilities.checkArgument(dir.isDirectory(), "ConfigDir is not a directory: " + dir.getAbsolutePath());
+		Preconditions.checkArgument(dir.isDirectory(), "ConfigDir is not a directory: " + dir.getAbsolutePath());
 
 		m_configDir = dir;
 		return this;
@@ -58,7 +58,7 @@ public class ConfigurationBuilder {
 	}
 	
 	public Configuration build(Configuration conf) throws FileNotFoundException {
-		Utilities.checkNotNullArgument(m_mrMode != null, "runner mode is not specified");
+		Preconditions.checkNotNullArgument(m_mrMode != null, "runner mode is not specified");
 		
 		// Marmot 설정 정보 추가
 		InputStream rscIs = readMarmotResource("marmot.xml");

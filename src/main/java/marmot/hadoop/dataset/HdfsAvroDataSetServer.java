@@ -10,6 +10,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import utils.jdbc.JdbcProcessor;
+
 import marmot.RecordStream;
 import marmot.avro.AvroUtils;
 import marmot.dataset.AbstractDataSet;
@@ -24,7 +26,6 @@ import marmot.dataset.DataSetNotFoundException;
 import marmot.dataset.JdbcCatalog;
 import marmot.hadoop.support.HdfsPath;
 import marmot.stream.StatsCollectingRecordStream;
-import utils.jdbc.JdbcProcessor;
 
 
 /**
@@ -125,7 +126,7 @@ public class HdfsAvroDataSetServer extends AbstractDataSetServer {
 			throw new CatalogException("fails to get JDBC system: name=marmot.catalog.jdbc.string");
 		}
 		
-		return JdbcProcessor.parseString(jdbcString);
+		return JdbcProcessor.builderFromCsv(jdbcString).build();
 	}
 	
 	private HdfsPath getHdfsPath(DataSetInfo info) {

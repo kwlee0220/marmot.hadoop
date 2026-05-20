@@ -20,6 +20,7 @@ import org.apache.hadoop.security.AccessControlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import utils.Preconditions;
 import utils.Utilities;
 import utils.func.FOption;
 import utils.stream.FStream;
@@ -51,8 +52,8 @@ public final class HdfsPath implements Serializable {
 	}
 	
 	private HdfsPath(Configuration conf, FileSystem fs, Path path) {
-		Utilities.checkArgument(conf != null || fs != null, "conf != null || fs != null");
-		Utilities.checkNotNullArgument(path, "path is null");
+		Preconditions.checkArgument(conf != null || fs != null, "conf != null || fs != null");
+		Preconditions.checkNotNullArgument(path, "path is null");
 		
 		m_conf = conf != null ? conf : fs.getConf();
 		m_fs = fs;
@@ -60,8 +61,8 @@ public final class HdfsPath implements Serializable {
 	}
 	
 	private HdfsPath(Configuration conf, FileSystem fs, FileStatus fstat) {
-		Utilities.checkArgument(conf != null || fs != null, "conf != null || fs != null");
-		Utilities.checkNotNullArgument(fstat, "FileStatus is null");
+		Preconditions.checkArgument(conf != null || fs != null, "conf != null || fs != null");
+		Preconditions.checkNotNullArgument(fstat, "FileStatus is null");
 
 		m_conf = conf != null ? conf : fs.getConf();
 		m_fs = fs;
@@ -113,7 +114,7 @@ public final class HdfsPath implements Serializable {
 	}
 	
 	public HdfsPath child(String name) {
-		Utilities.checkNotNullArgument(name, "name is null");
+		Preconditions.checkNotNullArgument(name, "name is null");
 		
 		return new HdfsPath(m_conf, m_fs, new Path(m_path, name));
 	}
@@ -268,7 +269,7 @@ public final class HdfsPath implements Serializable {
 	}
 	
 	public void moveTo(HdfsPath dst) {
-		Utilities.checkNotNullArgument(dst, "dst is null");
+		Preconditions.checkNotNullArgument(dst, "dst is null");
 		
 		if ( !exists() ) {
 			throw new MarmotFileException("source file not found: path=" + m_path);

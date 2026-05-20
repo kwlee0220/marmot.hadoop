@@ -8,6 +8,9 @@ import org.apache.avro.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import utils.Preconditions;
+import utils.stream.FStream;
+
 import marmot.RecordReader;
 import marmot.RecordSchema;
 import marmot.RecordStream;
@@ -15,8 +18,6 @@ import marmot.RecordStreamException;
 import marmot.avro.AvroUtils;
 import marmot.hadoop.support.HdfsPath;
 import marmot.stream.MultiSourcesRecordStream;
-import utils.Utilities;
-import utils.stream.FStream;
 
 /**
  * 
@@ -67,7 +68,7 @@ public class MultiPathsAvroReader implements RecordReader {
 	}
 
 	public static List<HdfsPath> collectPaths(HdfsPath start) {
-		Utilities.checkNotNullArgument(start, "start is null");
+		Preconditions.checkNotNullArgument(start, "start is null");
 		
 		try {
 			List<HdfsPath> paths = start.walkRegularFileTree()
